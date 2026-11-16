@@ -9,3 +9,4 @@ client_secret*.json
 *.mp4
 *.mov
 *.webm
+.hooks/autocommit.log
