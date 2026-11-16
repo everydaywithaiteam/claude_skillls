@@ -1,0 +1,105 @@
+{
+ "mode": "mac",
+ "output": "<project>/yt_screen_recordings_vN/03_finder_project_folder_4k30.mp4",
+ "mac": {
+  "app": "Finder",
+  "region": [
+   0,
+   25,
+   1920,
+   1080
+  ],
+  "tail_margin": 3.0
+ },
+ "setup": [
+  {
+   "do": "osascript",
+   "script": "tell application \"Finder\" to make new Finder window to (POSIX file \"<project>\")"
+  },
+  {
+   "do": "osascript",
+   "script": "tell application \"Finder\" to set current view of front window to list view"
+  }
+ ],
+ "steps": [
+  {
+   "do": "hold",
+   "s": 1.2
+  },
+  {
+   "do": "move",
+   "to": {
+    "x": 380,
+    "y": 196
+   },
+   "s": 1.0
+  },
+  {
+   "do": "click",
+   "to": {
+    "x": 380,
+    "y": 196
+   },
+   "s": 0.3
+  },
+  {
+   "do": "hold",
+   "s": 1.5
+  },
+  {
+   "do": "move",
+   "to": {
+    "x": 430,
+    "y": 336
+   },
+   "s": 0.9
+  },
+  {
+   "do": "click",
+   "s": 0
+  },
+  {
+   "do": "hold",
+   "s": 1.5
+  },
+  {
+   "do": "move",
+   "to": {
+    "x": 440,
+    "y": 356
+   },
+   "s": 0.6
+  },
+  {
+   "do": "click",
+   "s": 0
+  },
+  {
+   "do": "hold",
+   "s": 1.5
+  },
+  {
+   "do": "move",
+   "to": {
+    "x": 428,
+    "y": 416
+   },
+   "s": 0.8
+  },
+  {
+   "do": "click",
+   "s": 0
+  },
+  {
+   "do": "hold",
+   "s": 5.0
+  }
+ ],
+ "teardown": [
+  {
+   "do": "osascript",
+   "script": "tell application \"Finder\" to close front window"
+  }
+ ],
+ "_note": "Row coordinates came from the --check still for video 14's folder; re-pick them from the still for any other folder."
+}

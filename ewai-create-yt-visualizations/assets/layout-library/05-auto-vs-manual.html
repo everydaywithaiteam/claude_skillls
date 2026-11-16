@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auto versus Manual approvals</title>
+<style>
+:root{--ink:#20252b;--muted:#68717b;--paper:#f7f8fa;--card:#fff;--line:#cbd2d8;--blue:#2868d8;--blue-soft:#eaf1ff;--teal:#138b82;--teal-soft:#e6f6f3;--orange:#d47727;--orange-soft:#fff0df;--shadow:0 10px 28px rgba(32,37,43,.09)}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;display:grid;place-items:center;padding:38px;min-height:100vh}.sheet{width:min(100%,1480px);aspect-ratio:16/9;min-height:640px;background:var(--paper);padding:34px 44px 26px;display:grid;grid-template-rows:auto 1fr auto;gap:20px}
+header{display:flex;justify-content:space-between;align-items:end;gap:28px}.kicker{margin:0 0 10px;color:var(--blue);font-size:14px;font-weight:750;letter-spacing:.14em;text-transform:uppercase}h1{margin:0;font-size:clamp(32px,3.6vw,54px);line-height:1;letter-spacing:-.042em;max-width:900px}.dek{margin:0 0 4px;max-width:410px;color:var(--muted);font-size:clamp(15px,1.25vw,18px);line-height:1.4;text-align:right}
+.stage{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-content:center}.mode{background:#fff;border:1px solid var(--line);border-radius:22px;padding:25px;display:grid;gap:15px;box-shadow:var(--shadow)}.mode.manual{border-top:6px solid var(--blue)}.mode.auto{border-top:6px solid var(--teal)}.mode-head{display:flex;justify-content:space-between;align-items:start}.mode h2{margin:0;font-size:clamp(28px,2.6vw,40px);letter-spacing:-.04em}.manual h2{color:var(--blue)}.auto h2{color:var(--teal)}.badge{border-radius:999px;padding:7px 12px;font-size:12px;font-weight:800}.manual .badge{background:var(--blue-soft);color:var(--blue)}.auto .badge{background:var(--teal-soft);color:var(--teal)}.plain{font-size:clamp(18px,1.6vw,24px);font-weight:750}.behavior{color:var(--muted);font-size:clamp(14px,1.1vw,17px);line-height:1.4;border-top:1px solid var(--line);padding-top:13px}.use{border-radius:12px;padding:13px 15px;font-size:clamp(13px,1vw,16px);line-height:1.35}.manual .use{background:var(--blue-soft)}.auto .use{background:var(--teal-soft)}.stakes{grid-column:1/-1;margin:0;background:var(--ink);color:#fff;border-radius:14px;padding:14px 20px;text-align:center;font-size:clamp(17px,1.45vw,22px);font-weight:800;letter-spacing:.01em}
+footer{display:flex;justify-content:space-between;align-items:center;gap:20px;border-top:0;padding-top:14px}.takeaway{margin:0;font-size:clamp(16px,1.4vw,21px);font-weight:700}.note{margin:0;color:var(--muted);font:600 12px ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right;white-space:nowrap}
+@media(max-height:800px) and (min-width:901px){body{padding:14px}.sheet{width:min(100%,1200px);min-height:0;padding:27px 38px 22px;gap:14px}.mode{padding:21px;gap:11px}.stakes{padding:11px 18px}}
+@media(max-width:900px){body{padding:12px}.sheet{aspect-ratio:auto;min-height:0;padding:24px}.stage{grid-template-columns:1fr}.stakes{grid-column:auto}.dek{display:none}}
+</style>
+</head>
+<body>
+<main class="sheet">
+<header><div><p class="kicker">Choose supervision deliberately</p><h1>Manual pauses.<br>Auto keeps moving.</h1></div></header>
+<section class="stage">
+  <article class="mode manual"><div class="mode-head"><h2>Manual</h2><span class="badge">Default</span></div><div class="plain">“Ask me before acting.”</div><div class="behavior">Claude pauses. You review the action, then choose Allow or Deny.</div><div class="use"><strong>Use for:</strong> messages sent as you, money, sensitive accounts, important file changes.</div></article>
+  <article class="mode auto"><div class="mode-head"><h2>Auto</h2><span class="badge">Continuous</span></div><div class="plain">“Keep working, but safety-check actions.”</div><div class="behavior">Checks can allow, block, reroute, or pause an action for your input.</div><div class="use"><strong>Use for:</strong> low-risk research, drafting, and reversible work.</div></article>
+  <p class="stakes">Higher stakes = more supervision.</p>
+</section>
+<footer><p class="takeaway">Everyday with AI</p><p class="note" aria-hidden="true"></p></footer>
+</main>
+</body>
+</html>

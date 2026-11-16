@@ -1,0 +1,23 @@
+{
+  "mode": "browser",
+  "output": "<project>/yt_screen_recordings_vN/01_studio_private_upload_details_4k30.mp4",
+  "browser": {"url": "https://studio.youtube.com/video/VIDEO_ID/edit", "wait_for": "ytcp-video-metadata-visibility",
+              "viewport": [1600, 900], "scroller": "#main"},
+  "steps": [
+    {"do": "hold", "s": 1.5},
+    {"do": "move", "to": {"selector": "#title-textarea", "fx": 0.43, "fy": 0.38}, "s": 1.1},
+    {"do": "hold", "s": 2.3},
+    {"do": "move", "to": {"selector": "#description-textarea", "fx": 0.5, "dy": -230}, "s": 0.9},
+    {"do": "hold", "s": 0.8},
+    {"do": "scroll", "by": 400, "s": 1.9},
+    {"do": "hold", "s": 2.0},
+    {"do": "scroll", "top": true, "s": 1.5},
+    {"do": "move", "to": {"selector": "ytcp-video-info", "fx": 0.55, "fy": 0, "dy": 105}, "s": 1.0},
+    {"do": "hold", "s": 2.2},
+    {"do": "move", "to": {"selector": "[id*=subtitle]", "fx": 0, "dx": 130}, "s": 0.9},
+    {"do": "hold", "s": 2.0},
+    {"do": "move", "via": [{"x": 1520, "y": 610}], "to": {"text": "Private", "within": "ytcp-video-metadata-visibility", "fy": 0.6}, "s": 0.8},
+    {"do": "hold", "s": 6.5}
+  ],
+  "after_check": [{"target": {"selector": "ytcp-video-metadata-visibility"}, "expect": "Private"}]
+}

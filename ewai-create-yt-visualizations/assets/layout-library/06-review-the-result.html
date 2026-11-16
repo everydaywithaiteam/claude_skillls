@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review the result, not the activity</title>
+<style>
+:root{--ink:#20252b;--muted:#68717b;--paper:#f7f8fa;--card:#fff;--line:#cbd2d8;--blue:#2868d8;--blue-soft:#eaf1ff;--teal:#138b82;--teal-soft:#e6f6f3;--orange:#d47727;--orange-soft:#fff0df;--shadow:0 10px 28px rgba(32,37,43,.09)}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;display:grid;place-items:center;padding:38px;min-height:100vh}.sheet{width:min(100%,1480px);aspect-ratio:16/9;min-height:640px;background:var(--paper);padding:34px 44px 26px;display:grid;grid-template-rows:auto 1fr auto;gap:20px}
+header{display:flex;justify-content:space-between;align-items:end;gap:28px}.kicker{margin:0 0 10px;color:var(--blue);font-size:14px;font-weight:750;letter-spacing:.14em;text-transform:uppercase}h1{margin:0;font-size:clamp(32px,3.6vw,54px);line-height:1;letter-spacing:-.042em;max-width:900px}.dek{margin:0 0 4px;max-width:410px;color:var(--muted);font-size:clamp(15px,1.25vw,18px);line-height:1.4;text-align:right}
+.stage{display:grid;align-content:center;gap:18px}.contrast{display:grid;grid-template-columns:.72fr 1.55fr;gap:20px}.activity{background:var(--orange-soft);border:1px solid #efc89e;border-radius:20px;padding:24px;display:grid;align-content:center;gap:13px}.activity b{color:var(--orange);font-size:clamp(25px,2.4vw,37px);letter-spacing:-.035em}.activity span{color:var(--muted);font-size:clamp(14px,1.1vw,17px);line-height:1.4}.result{background:var(--teal-soft);border:2px solid var(--teal);border-radius:20px;padding:22px;display:grid;gap:14px;box-shadow:var(--shadow)}.label{font-size:12px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}.checks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.check{background:#fff;border:1px solid #bfe4dd;border-radius:15px;padding:20px 17px;display:grid;gap:9px;align-content:start}.num{color:var(--teal);font:800 13px ui-monospace,SFMono-Regular,Menlo,monospace}.check b{font-size:clamp(20px,1.8vw,28px);letter-spacing:-.03em}.check span{color:var(--muted);font-size:clamp(13px,1vw,15px);line-height:1.32}.rule{margin:0;background:var(--ink);color:#fff;border-radius:14px;padding:14px 20px;text-align:center;font-size:clamp(15px,1.25vw,19px);font-weight:700}
+footer{display:flex;justify-content:space-between;align-items:center;gap:20px;border-top:0;padding-top:14px}.takeaway{margin:0;font-size:clamp(16px,1.4vw,21px);font-weight:700}.note{margin:0;color:var(--muted);font:600 12px ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right;white-space:nowrap}
+@media(max-height:800px) and (min-width:901px){body{padding:14px}.sheet{width:min(100%,1200px);min-height:0;padding:27px 38px 22px;gap:14px}.activity,.result{padding:19px}.check{padding:16px}.rule{padding:11px 18px}}
+@media(max-width:900px){body{padding:12px}.sheet{aspect-ratio:auto;min-height:0;padding:24px}.contrast{grid-template-columns:1fr}.checks{grid-template-columns:1fr}.dek{display:none}}
+</style>
+</head>
+<body>
+<main class="sheet">
+<header><div><p class="kicker">The success test</p><h1>Progress is visible.<br>Value must be reviewed.</h1></div></header>
+<section class="stage">
+  <div class="contrast"><article class="activity"><span class="label">Activity</span><b>Claude is working</b><span>Progress indicators explain what is happening — not whether the result is useful.</span></article>
+  <article class="result"><span class="label">Review the deliverable</span><div class="checks"><div class="check"><span class="num">01</span><b>Complete?</b><span>Every requested section is present.</span></div><div class="check"><span class="num">02</span><b>Accurate?</b><span>Material claims match the sources.</span></div><div class="check"><span class="num">03</span><b>Reusable?</b><span>The output is ready for real work.</span></div></div></article></div>
+  <p class="rule">Review is part of the workflow — not a sign that the workflow failed.</p>
+</section>
+<footer><p class="takeaway">Everyday with AI</p><p class="note" aria-hidden="true"></p></footer>
+</main>
+</body>
+</html>

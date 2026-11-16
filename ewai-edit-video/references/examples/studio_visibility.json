@@ -1,0 +1,22 @@
+{
+  "mode": "browser",
+  "output": "<project>/yt_screen_recordings_vN/08_studio_visibility_controls_4k30.mp4",
+  "browser": {
+    "url": "https://studio.youtube.com/video/VIDEO_ID/edit",
+    "wait_for": "ytcp-video-metadata-visibility",
+    "viewport": [1600, 900],
+    "scroller": "#main"
+  },
+  "steps": [
+    {"do": "hold", "s": 1.2},
+    {"do": "move", "via": [{"x": 1520, "y": 610}], "to": {"text": "Private", "within": "ytcp-video-metadata-visibility", "fy": 0.6}, "s": 0.7},
+    {"do": "hold", "s": 1.5},
+    {"do": "click", "wait_for": "tp-yt-paper-radio-button[name=PUBLIC]", "settle_ms": 1800},
+    {"do": "hold", "s": 1.0},
+    {"do": "move", "to": {"selector": "tp-yt-paper-radio-button[name=PRIVATE]", "fx": 0, "dx": 60}, "s": 0.9},
+    {"do": "hold", "s": 1.6},
+    {"do": "move", "to": {"selector": "tp-yt-paper-radio-button[name=PUBLIC]", "fx": 0, "dx": 60}, "s": 1.0},
+    {"do": "hold", "s": 6.0}
+  ],
+  "after_check": [{"target": {"selector": "ytcp-video-metadata-visibility"}, "expect": "Private"}]
+}

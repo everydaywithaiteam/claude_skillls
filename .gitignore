@@ -1,0 +1,11 @@
+.DS_Store
+__pycache__/
+*.pyc
+.env
+*.token
+token*.json
+client_secret*.json
+# rendered outputs don't belong in skills
+*.mp4
+*.mov
+*.webm
