@@ -9,12 +9,12 @@ Three capture modes (pick per shot with "mode"):
            macOS `screencapture -v`, driven by AppleScript (osascript) and CoreGraphics mouse events.
            Needs Accessibility.
   screen   Real-time capture of a screen region holding the recording Chrome AND native apps side by
-           side or one after the other (PowerPoint next to a web page; a claude.ai chat, then Numbers).
+           side or one after the other (PowerPoint next to a web page; a claude.ai chat, then an Excel cross-check).
            Chrome is driven over CDP (drawn cursor), apps through their own AppleScript (no System
            Events), so it needs no Accessibility. Windows are placed by the plan.
 
 Usage:
-  python3 ewai_record.py --preflight [--apps "Numbers,Microsoft PowerPoint"] [--sites URL,URL] [plan.json …]
+  python3 ewai_record.py --preflight [--apps "Microsoft Excel,Microsoft PowerPoint"] [--sites URL,URL] [plan.json …]
                                               # one checklist of everything Sam must do before recording
   python3 ewai_record.py --session start      # remember what is open before recording
   python3 ewai_record.py plan.json            # record
@@ -473,7 +473,8 @@ def app_running(app):
 
 
 def app_documents(app):
-    out = osa(f'tell application "{app}" to get name of every document', timeout=8, fatal=False)
+    kind = "workbook" if app == "Microsoft Excel" else "document"     # Excel scripts workbooks, not documents
+    out = osa(f'tell application "{app}" to get name of every {kind}', timeout=8, fatal=False)
     return [d.strip() for d in out.split(",")] if out else []
 
 
@@ -684,7 +685,7 @@ class Screen:
     Plan:
       "region": [x, y, 1920, 1080] | "auto"
       "windows": [ {"chrome": {"url": …, "wait_for": …}, "rect": [rx, ry, rw, rh]},
-                   {"app": "Numbers", "open": "/path/file.xlsx", "rect": [rx, ry, rw, rh]} ]
+                   {"app": "Microsoft Excel", "open": "/path/file.xlsx", "rect": [rx, ry, rw, rh]} ]
          rect is relative to the region. For Chrome it is the page area: the toolbar sits above the
          region, so the URL bar and profile icon are never filmed. For an app it is the whole window.
          Windows are placed in order; the last one ends up in front.
@@ -825,10 +826,16 @@ class Screen:
                                   st.get("offset", 90), st.get("ms", 2000)])
         elif do == "osascript":
             osa(st["script"])
-        elif do == "select_cells":                  # Numbers: select a cell/range (shows its formula)
-            app, tb = st.get("app", "Numbers"), st.get("table", 1)
-            t = f'table {tb} of active sheet of front document'
-            osa(f'tell application "{app}" to set selection range of {t} to range "{st["range"]}" of {t}')
+        elif do == "select_cells":                  # Excel (default) or Numbers: select a cell/range (shows its formula)
+            app = st.get("app") or next((w["app"] for w in self.plan.get("windows", [])
+                                         if w.get("app") in ("Microsoft Excel", "Numbers")), "Microsoft Excel")
+            if app == "Microsoft Excel":
+                sheet = f'worksheet "{st["sheet"]}" of active workbook' if st.get("sheet") else "active sheet"
+                osa(f'tell application "Microsoft Excel" to select range "{st["range"]}" of {sheet}')
+            else:
+                tb = st.get("table", 1)
+                t = f'table {tb} of active sheet of front document'
+                osa(f'tell application "{app}" to set selection range of {t} to range "{st["range"]}" of {t}')
             self.ev("click", label="select " + st["range"], sound=st.get("sound"))
         else:
             die(2, f"unknown screen step: {do}")

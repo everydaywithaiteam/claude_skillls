@@ -9,7 +9,7 @@ Recorder: `scripts/ewai_record.py`. It takes a JSON **shot plan** per clip and h
 | Mode | Use for | How it captures |
 |---|---|---|
 | `browser` | Any website or web app: YouTube Studio, Tella, claude.ai, Cloudflare, GitHub, docs, a local HTML file | Frame-stepped. It sets the cursor, scroll and typing for each frame, then screenshots. The output is smooth, deterministic 30fps, and nothing is lost to lag. |
-| `screen` | The recording Chrome **and** native apps in one shot: PowerPoint next to a web page; a claude.ai chat, then a Numbers cross-check | Real-time capture of a 1920×1080-point region. Chrome is driven over CDP with a drawn cursor; apps through their own AppleScript dictionary. Places the windows itself. **Needs no Accessibility.** |
+| `screen` | The recording Chrome **and** native apps in one shot: PowerPoint next to a web page; a claude.ai chat, then an Excel cross-check | Real-time capture of a 1920×1080-point region. Chrome is driven over CDP with a drawn cursor; apps through their own AppleScript dictionary. Places the windows itself. **Needs no Accessibility.** |
 | `mac` | Native apps driven by mouse and keyboard: Finder, Terminal, editors | Real-time capture of a window region with `screencapture -v`, driven by AppleScript and CoreGraphics mouse events. Needs Accessibility. |
 
 Prefer `browser` whenever the thing to show is a web page; `screen` when an app has to be on screen but only needs placing, selecting or switching to; `mac` only when the app itself has to be clicked or typed into.
@@ -27,7 +27,7 @@ Prefer `browser` whenever the thing to show is a web page; `screen` when an app 
 
 ```bash
 python3 ewai_record.py --session start
-python3 ewai_record.py --preflight --apps "Numbers,Microsoft PowerPoint" --sites https://claude.ai/new plan1.json plan2.json …
+python3 ewai_record.py --preflight --apps "Microsoft Excel,Microsoft PowerPoint" --sites https://claude.ai/new plan1.json plan2.json …
 ```
 
 It derives apps and sites from the plans and checks, in one go:
@@ -67,7 +67,7 @@ When a brief's **Missing** line (or a missing file) names a result Claude can ma
 | A Claude Design deck or interactive page | Artifacts tool, from the Slides / Design types, using the prompt to paste and the checked numbers. Save a standalone copy to `<project>/claude_design_exports/`. |
 | A plain PowerPoint baseline slide | `anthropic-skills:pptx` (pptxgenjs, structured, native chart), saved to `<project>/powerpoint_baseline/`. Deliberately plain; same scope and numbers as the other builds. |
 | A claude.ai analysis chat (attachment + prompt + answer) | Record it live with a `browser` plan: `upload` the file, `send_prompt` the prompt (it waits for the full answer, off camera), then scroll the answer. Needs `"allow_send": true`. |
-| An independent spreadsheet cross-check (COUNTIF/COUNTIFS) | `openpyxl` workbook in `<project>/analysis/`: a "Cross-check" sheet (formula, Claude's number, ✓ match), a source-row lookup with the brief's row highlighted, and the raw data. Large fonts (22–30 pt) so it reads at 4K. Open it in Numbers, which recalculates; selecting a formula cell shows the formula in Numbers' formula bar. |
+| An independent spreadsheet cross-check (COUNTIF/COUNTIFS) | `openpyxl` workbook in `<project>/analysis/`: a "Cross-check" sheet (formula, Claude's number, ✓ match), a source-row lookup with the brief's row highlighted, and the raw data. Large fonts (22–30 pt) so it reads at 4K. Open it in **Microsoft Excel**, which Sam uses and which recalculates on open. Selecting a formula cell shows the formula in Excel's formula bar. Don't use Numbers: Sam never uses it, and its scripting broke mid-pass in video 15. |
 
 **Check before filming:** every number the built result shows must equal the analysis results (verify the answer/workbook values programmatically). If they disagree, fix the build; never record a wrong number.
 
@@ -109,10 +109,18 @@ Write it to scratch space (`--session note <dir>` so it's cleaned up), then save
 
 Every plan gets **`"beat"`** (the edit-map / recording-notes id, e.g. `"recording-03"` or `"B-roll 01_claude_design_exports"`) and **`"covers"`** (one line: what it shows). `--index` builds `index.md` from them.
 
-- **Pace it to the narration window.** Speech runs about 2.4 words per second. Plan the actions in the order the narration names things, holding on each one while it's spoken. Then add a 4–6 s still hold at the end so the editor has room to trim. A typical beat runs 15–40 s.
+- **Cover the whole script track, not just the brief's narration window.** A clip has to run under every sentence Sam says while it's on screen. That is everything from the beat's start anchor up to the next beat's start anchor in the edit map, plus his ad-libs. A clip that's too short ends up looped or stretched in the edit. In video 15, plans sized from the "Narration window" line came out 6–24 s short: 40 s for 46 s of narration, 46 s for 70 s, 49 s for 59 s. Size every clip like this:
+  - **The talking head is already recorded** (during an edit, after cleanup): pace to Sam's actual words (see "Pace to the transcript" below). Length = beat length + 4–6 s end hold.
+  - **Recording before Sam** (recordings on their own): count the script words from the start anchor to the next beat's anchor. Length = words ÷ 2.2 × 1.25 + 6 s end hold. The 1.25 is room for Sam's ad-libs and pauses. When in doubt, go longer: a long still hold is free to trim, a short clip is not.
+  - Spread the extra time over holds on the things the narration names, not only on the final hold, so each item stays on screen while it's being talked about. A typical beat runs 30–75 s.
+- **Pace to the transcript** (when Sam's take exists). Read the beat with `get_transcript` `view: sentences`. Each sentence starts at `t = sentence start − beat start`. Put each action at the t of the sentence that names it (show the overview on "I want 8 slides", open Export on "I export the HTML"), and hold until the next one.
+  - **Browser mode is deterministic:** clip time is the sum of each step's `s` (moves, clicks, scrolls, holds). A click lands at the end of its own `s`. `settle_ms`, `key`, `goto` and `offline` add no clip time. So you can compute the plan to within 0.1 s; the events file confirms it.
+  - **Screen and mac modes run in real time:** expect ±0.5 s.
+  - In Tella the in-point is then 0, and the clip covers the beat without splitting or holds.
 - **Point at what's being talked about.** Every narrated item gets a cursor move to it and a hold of 1.2–2.5 s. Scroll only as far as the brief asks.
 - **Avoid hover pop-ups.** Route around them with `via` waypoints in an empty gutter, and aim at the exact text (`"text": "Private", "within": "<card selector>"`).
-- **Start from a known state.** Interactive pages: reset filters first (or load the page fresh) so the clip starts where the narration does. Editors with view modes (Claude Design's deck editor has an overview grid): make sure the plan returns to the single-slide view, and check the end frame.
+- **Start from a known state.** Interactive pages: reset filters first (or load the page fresh) so the clip starts where the narration does. Editors with view modes (Claude Design's deck editor has an overview grid): make sure the plan returns to the single-slide view, and check the end frame. Claude Design's deck editor also reopens on the **last slide viewed**, so start a deck plan by clicking slide 1's filmstrip thumbnail with `"sound": "none"`.
+- **Use coordinates for targets that only appear mid-plan.** `--check` resolves targets on the page as it first loads. A text that only appears after an earlier click (e.g. "All selected" once filters are on) fails the check with a timeout, so aim at it with `x`/`y` measured from an earlier contact sheet.
 
 ### Browser plan
 
@@ -153,11 +161,11 @@ Every plan gets **`"beat"`** (the edit-map / recording-notes id, e.g. `"recordin
 ```json
 {
   "mode": "screen",
-  "beat": "recording-03", "covers": "claude.ai analysis chat, then the Numbers COUNTIFS cross-check",
+  "beat": "recording-03", "covers": "claude.ai analysis chat, then the Excel COUNTIFS cross-check",
   "output": "<project>/yt_screen_recordings_vN/03_claude_analysis_chat_4k30.mp4",
   "region": "auto",
   "windows": [
-    {"app": "Numbers", "open": "<project>/analysis/<name>_crosscheck.xlsx", "rect": [0, 0, 1920, 1080]},
+    {"app": "Microsoft Excel", "open": "<project>/analysis/<name>_crosscheck.xlsx", "rect": [0, 0, 1920, 1080]},
     {"chrome": {"url": "https://claude.ai/chat/<id>"}, "rect": [0, 0, 1920, 1080]}
   ],
   "steps": [
@@ -165,7 +173,7 @@ Every plan gets **`"beat"`** (the edit-map / recording-notes id, e.g. `"recordin
     {"do": "chrome_scroll", "to": {"text": "Structure"}, "offset": 90, "ms": 2500},
     {"do": "hold", "s": 3.0},
     {"do": "chrome_click", "to": {"text": "Mountain"}},
-    {"do": "front", "window": "Numbers"},
+    {"do": "front", "window": "Microsoft Excel"},
     {"do": "select_cells", "range": "C12"},
     {"do": "hold", "s": 4.0}
   ],
@@ -174,7 +182,7 @@ Every plan gets **`"beat"`** (the edit-map / recording-notes id, e.g. `"recordin
 ```
 
 - `region`: `"auto"` picks a 1920×1080-point area on the current main display (3840×2160 px). `rect`s are relative to it. A Chrome `rect` is the **page area** (its toolbar sits above the region); an app `rect` is the whole window (its own toolbar is fine on camera). Side by side: e.g. PowerPoint `[0,0,960,1080]`, Chrome `[960,0,960,1080]`. The last window listed starts in front.
-- Steps: `hold` · `front {window: "chrome" | app}` (the recording Chrome is raised by its PID, so Sam's own Chrome never comes forward) · `chrome_move {to, s}` · `chrome_click {to}` (same refusal list as browser mode) · `chrome_select {to, value}` · `chrome_scroll {to_px | to+offset, ms, scroller?}` · `select_cells {range, app?, table?}` (Numbers) · `osascript {script}` (the app's own dictionary only, e.g. PowerPoint `run slide show`; never System Events).
+- Steps: `hold` · `front {window: "chrome" | app}` (the recording Chrome is raised by its PID, so Sam's own Chrome never comes forward) · `chrome_move {to, s}` · `chrome_click {to}` (same refusal list as browser mode) · `chrome_select {to, value}` · `chrome_scroll {to_px | to+offset, ms, scroller?}` · `select_cells {range, sheet?, app?}` (selects a cell or range in Excel, or in the plan's spreadsheet window; Numbers takes `table?`) · `osascript {script}` (the app's own dictionary only, e.g. PowerPoint `run slide show`; never System Events).
 - `length_s` sets the clip length. The macOS capture stops saving frames once the screen stops changing, so the recorder clones the last frame out to `length_s`. Default: the steps plus a 4 s hold.
 - **PowerPoint:** fine as a window in Normal view. Use its own AppleScript for slide-show settings (`set show type of slide show settings of active presentation to slide show type window`, then `run slide show`). A first-run "Welcome" modal blocks all scripting; preflight catches it.
 
@@ -216,12 +224,14 @@ Every plan gets **`"beat"`** (the edit-map / recording-notes id, e.g. `"recordin
    - no private data;
    - the end frame shows the beat's "Stop when" state.
 4. **Failed? Retake without asking.** Fix the plan and record `…_take2_4k30.mp4` (then `take3`). Ask Sam only if take 3 still fails, or the failure is something only he can fix.
-5. `ffprobe`: 3840×2160, 30/1, h264, yuv420p, no audio, length ≥ the narration window + 4 s. Check `<clip>.events.json` lists the clicks you expect.
+5. `ffprobe`: 3840×2160, 30/1, h264, yuv420p, no audio, and **length ≥ the sizing rule in section 7** (beat length + 4 s when Sam's take exists). A clip shorter than that fails review: retake it with longer holds, don't deliver it. Check `<clip>.events.json` lists the clicks you expect, at the times the plan intended.
+
+**Spreadsheets: use Excel, not Numbers.** Sam has Microsoft Excel and never uses Numbers. Numbers' scripting also broke in video 15: it answered `get frontmost` but failed `count documents` (-1708 / -1728) even with the workbook on screen, and a relaunch didn't fix it. Excel opens the `.xlsx` as is, takes `select range`, and shows the formula in its formula bar. If an app stops answering document commands like this, ask Sam once to restart it, then keep the existing footage; don't retry in a loop.
 
 ## 9. Save, index, clean up, report
 
 1. **Names:** `<project>/yt_screen_recordings_vN/<NN>_<short_name>_4k30.mp4`, NN = script section number (letter suffix for a second clip in a section: `07b_…`), highest existing `vN`. Never overwrite a clip: retakes are `…_take2_4k30.mp4`.
-2. **Promote** the passing take: `python3 ewai_record.py --promote <dir>/<NN>_<name>_take2_4k30.mp4`. It becomes `<NN>_<name>_4k30.mp4` with its events and plan, and the other takes are deleted, so the folder holds exactly one clip per beat.
+2. **Promote** the passing take: `python3 ewai_record.py --promote <dir>/<NN>_<name>_take2_4k30.mp4`. It becomes `<NN>_<name>_4k30.mp4` with its events and plan, and the other takes are deleted, so the folder holds exactly one clip per beat. Promote also deletes the old `<NN>_<name>.plan.json`. If the take's plan lives only in scratch space, write it back as `<NN>_<name>.plan.json` (output path without `_takeN`) after promoting, or the clip loses its retake plan.
 3. **Index:** `python3 ewai_record.py --index <dir>` writes `index.md` (beat → clip → length → what it shows). The Tella edit reads it to place clips; it replaces hand-made mapping tables.
 4. **Clean up:** `python3 ewai_record.py --session end`. It:
    - closes the recording Chrome's tabs opened during the session (or quits that Chrome if the session started it; sign-ins stay in its profile);

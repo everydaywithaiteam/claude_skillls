@@ -46,7 +46,7 @@ Sam wants Claude to do the screen recordings and B-roll captures instead of him.
 
 **Run the whole pass without check-ins.** "Do the recordings" is the go-ahead for every beat. Ask Sam once, at the preflight (sign-ins, macOS prompts, first-run windows, Do Not Disturb, any link nothing in the project names), then record everything, retake what fails review, clean up, and report once. Don't stop between clips to confirm plans, takes or names.
 
-**What Claude can record:** anything shown on a screen, such as a web page, web app, Finder, Terminal, PowerPoint, Numbers, an editor or System Settings, as long as it shows a real result. **If the result doesn't exist yet but Claude can make it** from the project's prompts and checked analysis (a Claude Design deck or interactive page as an Artifact, a plain PowerPoint baseline slide, a claude.ai analysis chat, a COUNTIFS cross-check workbook), build it first, then record it; see `references/screen-recording.md` section 3. **What it can't:** camera footage, phone screens, stock shots, or a result only Sam can produce (a real upload, a production run). List those in the report as still needed from Sam.
+**What Claude can record:** anything shown on a screen, such as a web page, web app, Finder, Terminal, PowerPoint, Excel, an editor or System Settings, as long as it shows a real result. **If the result doesn't exist yet but Claude can make it** from the project's prompts and checked analysis (a Claude Design deck or interactive page as an Artifact, a plain PowerPoint baseline slide, a claude.ai analysis chat, a COUNTIFS cross-check workbook), build it first, then record it; see `references/screen-recording.md` section 3. **What it can't:** camera footage, phone screens, stock shots, or a result only Sam can produce (a real upload, a production run). List those in the report as still needed from Sam.
 
 **Where files go:** always the real project folder (`…/Everyday With AI/videos/video NN - <slug>/`), never a `.claude/worktrees/…` copy. When the session runs in a worktree, resolve the project folder in the main checkout and write deliverables there.
 
@@ -62,7 +62,11 @@ Ask Sam for a link only when none of those name the target, and only inside the 
 Follow `references/screen-recording.md` for the full method. In short:
 1. `ewai_record.py --session start`, then `--preflight` → one checklist to Sam → re-run until clean.
 2. Build missing results Claude can make; check their numbers against `analysis/*_results_*.md`.
-3. Per beat: a JSON shot plan (with `"beat"` and `"covers"`) in the right mode: frame-stepped `browser` for web pages, real-time `screen` for the recording Chrome plus apps like PowerPoint or Numbers (no Accessibility needed), real-time `mac` for apps that must be clicked or typed into. Pace it to the narration.
+3. Per beat: a JSON shot plan (with `"beat"` and `"covers"`) in the right mode: frame-stepped `browser` for web pages, real-time `screen` for the recording Chrome plus apps like PowerPoint or Excel (no Accessibility needed), real-time `mac` for apps that must be clicked or typed into. **Make it long enough to cover Sam's whole script track for the beat**, not just the brief's narration window:
+   - after his take exists: pace it to his transcript, so it runs the beat length + 4–6 s;
+   - before his take: script words from the start anchor to the next anchor ÷ 2.2 × 1.25, + 6 s.
+
+   Clips sized from the narration window alone came out 6–24 s short in video 15 and had to be re-recorded. See section 7 of `references/screen-recording.md`.
 4. **Look, don't change** (the recorder refuses risky clicks); real results only; never a sign-in screen; automatic privacy defaults (claude.ai sidebar collapsed, connected-computer name hidden).
 5. Review a contact sheet; retake automatically (up to take 3) when it fails.
 6. `--promote` the passing take, `--index` the folder (writes `index.md`: beat → clip).
@@ -212,7 +216,16 @@ Media uploaded in Tella's own editor has no `sourceId` and can't be placed throu
   The B-roll fills the screen slot and Sam stays in the corner. If the file is shorter than the beat it loops; tell Sam once how much longer it needs to be, and drop it if he says not to worry.
 - **If no file exists**, check the main screen recording first: the B-roll may have been captured there. If so, treat the beat as `Screen recording` and say so in the report. If it isn't there either, Claude records it (see "Screen recordings and B-roll: Claude records them") and places it as below.
 
-**Replacement screen recordings** (`yt_screen_recordings_vN/NN_<name>_4k30.mp4`): used when Sam asks, and for every beat Claude records during the edit. For a fresh recording, record it after the cleanup (step 2) so the beat's length is known. Pace it to run at least the beat length plus the 4–6 s end hold, so nothing loops; because it was paced to this narration, its in-point in step 2 is usually 0. If a beat is longer than an existing clip, re-record with longer holds (as `_take2`) instead of letting it loop.
+**Replacement screen recordings** (`yt_screen_recordings_vN/NN_<name>_4k30.mp4`): used when Sam asks, and for every beat Claude records during the edit. For a fresh recording, record it after the cleanup (step 2) so the beat's length is known. Pace it to run at least the beat length plus the 4–6 s end hold, so nothing loops; because it was paced to this narration, its in-point in step 2 is usually 0.
+
+**A clip shorter than its beat: re-record it, don't stretch it.** This is Sam's preference, and it's the default whenever a Claude-recorded clip runs short of its beat. It isn't a question for the report.
+- Re-record as `_take2`, paced to the beat's transcript sentence times (see section 7 of `references/screen-recording.md`), then swap it in.
+- Stretching means splitting the beat into segments that replay still moments. It's only a fallback, for when the re-record is impossible: an app that won't script, a result that's gone. In that case, say which beat was stretched and by how much.
+
+**Swapping a re-recorded clip into a beat that's already placed** (the beat is already split into layout sections):
+- Don't rebuild the layouts. `update_layout` every section in the beat range with `media {type: video, sourceId: <new>, startTimeMs: section start − beat start, muted: true}`. The new clip then plays straight through across the existing hard cuts, with identical frames on both sides of each cut.
+- Remove the beat's old zooms and sounds. Add new per-segment zooms (step 6) and new sounds from the new events file (step 7).
+- Upload with `create_source` + PUT as usual.
 
 1. **See what each clip shows, and when.** Start from `yt_screen_recordings_vN/index.md` (beat → clip); clip file numbers are script section numbers, not the recording numbers in the notes, so use the index rather than guessing from names. Make a contact sheet per file on the Mac: `ffmpeg -i <file> -vf "fps=1/2,scale=640:-1,tile=4x4" -frames:v 1 sheet.jpg`, then read it. Map each file to its section (`NN`) and to the stretch of narration it fits. Some sections have two screen beats, and the clip may only fit one of them (e.g. a Studio clip fits "Here is the result in Studio…", not the upload report before it).
 2. **Pick the in-point from the narration**, not 0. Line the clip's key moment up with the sentence that names it: Visibility → Private under "I still decide when it goes public", the visibility dialog under "make the video public". Check that the opening frame fits the first words too. A page switch (e.g. a Languages page under "I check the title") is wrong. Find exact switch times with a 10 fps sheet over a 1–2 s window. Keep `in-point + beat length ≤ clip length` so it doesn't loop. If it can't fit, say how much longer the clip would need to be.
@@ -237,7 +250,8 @@ Whenever the screen is shown (terminal, Finder or folder, browser, settings, REA
 4. **Set the focus point correctly.** Tella's `focusPoint` is the point that stays fixed on screen while zooming, not the point that gets centered. To center a region whose center is at footage `c` (per axis) at scale `s`: `focus = (c·s − 50) / (s − 1)`, clamped to 0–100. Example: a terminal centered at (33.5, 58.9) at 1.8× → focus (13, 70). Near an edge, clamp and accept that the region sits off-center.
 5. **Timing.** Start ~500ms after the beat starts and end ~500ms before it ends, smooth in and out. The zoom eases inside the beat; the beat boundaries stay hard cuts.
 6. **Follow the content.** If the relevant region changes mid-beat (a dialog opens, a command's output appears, a second window comes forward, the narration moves from one window to the other), split into separate zooms with their own focus and scale, switching at the sentence where the narration moves.
-7. **Verify each zoom** with a 960px `get_clip_frame`: the relevant region fully in frame, nothing important cut at the edges, text readable. Adjust and re-check.
+7. **One zoom per layout section.** A zoom that spans more than one b-roll layout section doesn't render: the footage shows unzoomed. Where a beat is split into several sections (re-timed in-points, swapped clips), split the zoom at every section boundary. Inner joins get `hard_cut` intro and outro, and only the outermost ends get `smooth`, so it reads as one continuous zoom.
+8. **Verify each zoom** with a 960px `get_clip_frame`: the relevant region fully in frame, nothing important cut at the edges, text readable. Adjust and re-check.
 
 ### 7. UI sounds for Claude's recordings
 
@@ -254,6 +268,7 @@ Claude's recordings are silent, so a click that opens a dialog or a command type
    - drops events outside the shown part of the clip and merges double-clicks.
 
    Page loads and command output get no sound by default. To accent one (a successful upload, a dialog appearing), set `"sound": "success"` or `"ui-reveal"` on that step in the shot plan before recording. `"sound": "none"` silences a step. Other presets: `tick`, `toggle`, `notification-chime`, `button-click` (`list_library` with `scope: default`, `type: sound-effect` for the full catalog).
+   Run it once per layout section with that section's start, duration and in-point. If a fallback stretch replays the same stretch of footage in several sections, keep only the first section's sounds; otherwise one click plays several times. Older events files list times as `t` in seconds instead of `t_ms`. Convert them (`t_ms = t × 1000`) into a scratch copy first, or `--sfx` stops with "needs t_ms".
 2. **Apply** all of a video's sound ops in one `apply_video_edits` batch (it can share a batch with the zooms).
 3. **Keep it subtle.** The sounds sit under Sam's voice, never over it: keep the default volumes. No sounds for cursor moves, hovers or scrolls. If a beat would get more than about one sound per second, keep only the clicks the narration talks about and set the rest to `"none"`.
 4. **Check** with `list_sound_effects` on the clip: the count matches the ops and every start is inside its beat. Sounds can't be heard from here, so say in the report that they were placed by timestamp, not listened to.
